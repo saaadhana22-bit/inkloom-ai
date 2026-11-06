@@ -16,8 +16,20 @@ def rewrite_content(
     purpose="",
     length_choice=""
 ):
-    rewritten = original_content.strip()
+    rewritten = (original_content or "").strip()
     explanations = []
+
+    # Clean exaggerated repeated letters
+    rewritten = re.sub(
+        r"([a-zA-Z])\1{2,}",
+        r"\1\1",
+        rewritten,
+        flags=re.IGNORECASE
+    )
+
+    # Normalise common stretched promotional words
+    rewritten = re.sub(r"\bbuyy+\b", "buy", rewritten, flags=re.IGNORECASE)
+    rewritten = re.sub(r"\bnoww+\b", "now", rewritten, flags=re.IGNORECASE)
 
     # 1. Normalise personality
     if isinstance(personality, str):
@@ -26,11 +38,18 @@ def rewrite_content(
     personality = personality or []
 
     # 2. Improve capitalisation
-    if rewritten.isupper():
-        rewritten = rewritten.capitalize()
+    if rewritten:
+        rewritten = rewritten[0].upper() + rewritten[1:]
+
+        if rewritten.isupper():
+            rewritten = rewritten.capitalize()
+
         explanations.append(
             "Improved capitalisation for readability."
         )
+
+    # Improve spacing between sentences
+    rewritten = re.sub(r"\s+", " ", rewritten).strip()
 
     # 3. Reduce excessive punctuation
     if re.search(r"[!?]{2,}", rewritten):
@@ -123,7 +142,7 @@ def rewrite_content(
     # 7. Preferred vocabulary
     preferred = [
         word.strip()
-        for word in preferred_words.split(",")
+        for word in (preferred_words or "").split(",")
         if word.strip()
     ]
 
@@ -136,7 +155,7 @@ def rewrite_content(
     # 8. Avoided vocabulary
     avoided = [
         word.strip()
-        for word in avoid_words.split(",")
+        for word in (avoid_words or "").split(",")
         if word.strip()
     ]
 

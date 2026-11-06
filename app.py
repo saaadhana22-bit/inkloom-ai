@@ -34,519 +34,197 @@ st.markdown("""
     --line: #e9e5f2;
     --mint: #dff5ed;
 }
-
-html {
-    scroll-behavior: smooth;
+html { scroll-behavior: smooth; }
+/* Make Streamlit's own top header fully transparent and remove its dark divider. */
+header[data-testid="stHeader"],
+.stAppHeader {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
 }
-
-[id] {
-    scroll-margin-top: 25px;
+header[data-testid="stHeader"]::before,
+header[data-testid="stHeader"]::after,
+.stAppHeader::before,
+.stAppHeader::after {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
 }
-
+div[data-testid="stDecoration"] {
+    display: none !important;
+    height: 0 !important;
+}
 .stApp {
     background: #fbf9ff;
     color: var(--ink);
     font-family: 'DM Sans', sans-serif;
 }
-
 .block-container {
     max-width: 1240px;
     padding-top: 1.2rem;
     padding-bottom: 4rem;
 }
-
 h1, h2, h3, h4 {
     font-family: 'Space Grotesk', sans-serif !important;
     color: var(--ink);
     letter-spacing: -0.04em;
 }
-
-p, li, label, .stMarkdown {
-    font-family: 'DM Sans', sans-serif;
-}
-
-a {
-    text-decoration: none !important;
-}
-
-section[data-testid="stSidebar"] {
-    background: #f1edff;
-}
-
-div[data-testid="stVerticalBlock"] {
-    gap: 0.8rem;
-}
-
-/* NAVIGATION */
+p, li, label, .stMarkdown { font-family: 'DM Sans', sans-serif; }
+a { text-decoration: none !important; }
+section[data-testid="stSidebar"] { background: #f1edff; }
+div[data-testid="stVerticalBlock"] { gap: 0.8rem; }
 
 .topbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 20px;
-    border: 1px solid rgba(118,87,232,.13);
-    border-radius: 18px;
-    background: rgba(255,255,255,.95);
-    box-shadow: 0 8px 30px rgba(43,29,89,.05);
-    margin-bottom: 28px;
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 12px 20px; border:1px solid rgba(118,87,232,.13);
+    border-radius:18px; background:rgba(255,255,255,.88);
+    box-shadow:0 8px 30px rgba(43,29,89,.05);
+    margin-bottom:28px;
 }
-
-.logo {
-    font-family: 'Space Grotesk';
-    font-weight: 800;
-    font-size: 1.25rem;
-    color: #261d45;
-}
-
-.logo span {
-    color: #7657e8;
-}
-
-.navlinks {
-    color: #716b82;
-    font-size: .88rem;
-    font-weight: 700;
-}
-
-.navlinks a {
-    color: #716b82 !important;
-    text-decoration: none !important;
-    padding: 6px 3px;
-    transition: color .2s ease;
-}
-
-.navlinks a:hover {
-    color: #7657e8 !important;
-}
-
-/* HERO */
-
+.logo { font-family:'Space Grotesk'; font-weight:800; font-size:1.25rem; color:#261d45; }
+.logo span { color:#7657e8; }
+.navlinks { color:#716b82; font-size:.88rem; font-weight:700; }
 .eyebrow {
-    display: inline-block;
-    padding: 7px 12px;
-    border-radius: 30px;
-    background: #eee9ff;
-    color: #6447d2;
-    font-size: .76rem;
-    font-weight: 800;
-    letter-spacing: .09em;
-    text-transform: uppercase;
+    display:inline-block; padding:7px 12px; border-radius:30px;
+    background:#eee9ff; color:#6447d2; font-size:.76rem;
+    font-weight:800; letter-spacing:.09em; text-transform:uppercase;
 }
-
 .hero {
-    position: relative;
-    overflow: hidden;
-    border-radius: 30px;
-    padding: 58px 48px;
-    min-height: 410px;
-    background:
-        radial-gradient(circle at 82% 18%, #ffd4c8 0, transparent 26%),
-        radial-gradient(circle at 68% 90%, #c8baff 0, transparent 35%),
-        linear-gradient(120deg,#f0eaff 0%,#fff1eb 55%,#f8eaff 100%);
-    border: 1px solid #eee5ff;
+    position:relative; overflow:hidden; border-radius:30px;
+    padding:58px 48px; min-height:410px;
+    background: radial-gradient(circle at 82% 18%, #ffd4c8 0, transparent 26%),
+                radial-gradient(circle at 68% 90%, #c8baff 0, transparent 35%),
+                linear-gradient(120deg,#f0eaff 0%,#fff1eb 55%,#f8eaff 100%);
+    border:1px solid #eee5ff;
 }
-
-.hero h1 {
-    font-size: clamp(2.6rem,5vw,4.8rem);
-    line-height: 1.02;
-    max-width: 650px;
-    margin: 18px 0;
-}
-
-.hero p {
-    color: #625b76;
-    font-size: 1.08rem;
-    max-width: 560px;
-    line-height: 1.75;
-}
-
+.hero h1 { font-size:clamp(2.6rem,5vw,4.8rem); line-height:1.02; max-width:650px; margin:18px 0; }
+.hero p { color:#625b76; font-size:1.08rem; max-width:560px; line-height:1.75; }
 .hero-art {
-    position: absolute;
-    right: 2%;
-    top: 9%;
-    width: 43%;
-    max-width: 500px;
-    filter: drop-shadow(0 25px 28px rgba(48,32,91,.2));
-    transform: rotate(-5deg);
+    position:absolute; right:2%; top:9%; width:43%; max-width:500px;
+    filter:drop-shadow(0 25px 28px rgba(48,32,91,.2));
+    transform:rotate(-5deg);
     animation: floaty 5s ease-in-out infinite;
 }
-
-@keyframes floaty {
-    0%,100% { transform: translateY(0) rotate(-5deg); }
-    50% { transform: translateY(-12px) rotate(-3deg); }
-}
-
-@keyframes rise {
-    from { opacity: 0; transform: translateY(18px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.fade {
-    animation: rise .7s ease both;
-}
-
+@keyframes floaty { 0%,100%{transform:translateY(0) rotate(-5deg)} 50%{transform:translateY(-12px) rotate(-3deg)} }
+@keyframes rise { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+.fade { animation:rise .7s ease both; }
 .pill {
-    display: inline-block;
-    padding: 8px 12px;
-    border-radius: 30px;
-    background: white;
-    border: 1px solid #eee8fa;
-    color: #5d4a9b;
-    font-size: .78rem;
-    font-weight: 700;
-    margin: 4px 4px 0 0;
+    display:inline-block; padding:8px 12px; border-radius:30px;
+    background:white; border:1px solid #eee8fa; color:#5d4a9b;
+    font-size:.78rem; font-weight:700; margin:4px 4px 0 0;
 }
-
-/* SECTIONS */
-
-.section {
-    padding: 48px 0 16px;
-}
-
-.section-kicker {
-    color: #7657e8;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: .13em;
-    font-size: .75rem;
-}
-
-.section-title {
-    font-size: 2.35rem;
-    margin: 8px 0 10px;
-}
-
-.section-desc {
-    color: #77728b;
-    line-height: 1.75;
-    max-width: 760px;
-}
-
-/* CARDS */
-
+.section { padding:48px 0 16px; }
+.section-kicker { color:#7657e8; font-weight:800; text-transform:uppercase; letter-spacing:.13em; font-size:.75rem; }
+.section-title { font-size:2.35rem; margin:8px 0 10px; }
+.section-desc { color:#77728b; line-height:1.75; max-width:760px; }
 .card {
-    background: white;
-    border: 1px solid var(--line);
-    border-radius: 22px;
-    padding: 23px;
-    height: 100%;
-    box-shadow: 0 8px 28px rgba(40,28,80,.035);
-    transition: transform .22s ease, box-shadow .22s ease;
+    background:white; border:1px solid var(--line); border-radius:22px;
+    padding:23px; height:100%; box-shadow:0 8px 28px rgba(40,28,80,.035);
+    transition:transform .22s ease, box-shadow .22s ease;
 }
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 16px 36px rgba(65,44,130,.09);
-}
-
+.card:hover { transform:translateY(-5px); box-shadow:0 16px 36px rgba(65,44,130,.09); }
 .card-icon {
-    width: 48px;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 15px;
-    background: #f0ebff;
-    font-size: 1.35rem;
-    margin-bottom: 14px;
+    width:48px;height:48px;display:flex;align-items:center;justify-content:center;
+    border-radius:15px;background:#f0ebff;font-size:1.35rem;margin-bottom:14px;
 }
-
-.card h3 {
-    font-size: 1.12rem;
-    margin: 4px 0 8px;
-}
-
-.card p {
-    color: #77728b;
-    line-height: 1.65;
-    font-size: .92rem;
-}
-
+.card h3 { font-size:1.12rem; margin:4px 0 8px; }
+.card p { color:#77728b; line-height:1.65; font-size:.92rem; }
 .soft-panel {
-    border-radius: 26px;
-    padding: 28px;
-    background: linear-gradient(135deg,#f0ebff,#fff0e9);
-    border: 1px solid #e9e0ff;
+    border-radius:26px; padding:28px; background:linear-gradient(135deg,#f0ebff,#fff0e9);
+    border:1px solid #e9e0ff;
 }
-
 .dark-panel {
-    border-radius: 26px;
-    padding: 32px;
-    color: white;
-    background: linear-gradient(120deg,#292044,#4d367f 70%,#7657e8);
+    border-radius:26px; padding:32px; color:white;
+    background:linear-gradient(120deg,#292044,#4d367f 70%,#7657e8);
 }
-
-.dark-panel h2,
-.dark-panel h3,
-.dark-panel p {
-    color: white;
-}
-
-/* STATISTICS AND SCORES */
-
+.dark-panel h2,.dark-panel h3,.dark-panel p { color:white; }
 .stat {
-    border-radius: 18px;
-    background: white;
-    border: 1px solid var(--line);
-    padding: 17px;
-    text-align: center;
+    border-radius:18px; background:white; border:1px solid var(--line);
+    padding:17px; text-align:center;
 }
-
-.stat strong {
-    display: block;
-    font-family: 'Space Grotesk';
-    font-size: 1.6rem;
-    color: #7657e8;
-}
-
-.stat span {
-    color: #77728b;
-    font-size: .8rem;
-}
-
+.stat strong { display:block; font-family:'Space Grotesk'; font-size:1.6rem; color:#7657e8; }
+.stat span { color:#77728b; font-size:.8rem; }
 .score-number {
-    font-family: 'Space Grotesk';
-    font-size: 3.5rem;
-    font-weight: 800;
-    color: #7657e8;
-    line-height: 1;
+    font-family:'Space Grotesk'; font-size:3.5rem; font-weight:800;
+    color:#7657e8; line-height:1;
 }
-
-.score-track {
-    height: 9px;
-    border-radius: 20px;
-    background: #eeeaf5;
-    overflow: hidden;
-}
-
-.score-fill {
-    height: 9px;
-    border-radius: 20px;
-    background: linear-gradient(90deg,#7657e8,#ff8b7d);
-}
-
-/* RESULT BOXES */
-
+.score-track { height:9px; border-radius:20px; background:#eeeaf5; overflow:hidden; }
+.score-fill { height:9px; border-radius:20px; background:linear-gradient(90deg,#7657e8,#ff8b7d); }
 .result-box {
-    background: #fff;
-    color: #302b3d !important;
-    border: 1px solid #e9e5f2;
-    border-radius: 18px;
-    padding: 18px;
-    min-height: 150px;
-    white-space: pre-wrap;
-    line-height: 1.7;
+    background:#fff; border:1px solid #e9e5f2; border-radius:18px;
+    padding:18px; min-height:150px; white-space:pre-wrap; line-height:1.7;
 }
-
 .preview-instagram {
-    max-width: 440px;
-    margin: auto;
-    background: white;
-    border: 1px solid #e8e3ed;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 12px 32px rgba(30,20,55,.08);
+    max-width:440px; margin:auto; background:white; border:1px solid #e8e3ed;
+    border-radius:20px; overflow:hidden; box-shadow:0 12px 32px rgba(30,20,55,.08);
 }
-
-.preview-head {
-    padding: 13px 16px;
-    font-weight: 800;
-    font-size: .9rem;
-}
-
-.preview-image {
-    width: 100%;
-    height: 150px;
-    object-fit: cover;
-}
-
-.preview-caption {
-    padding: 14px 16px 18px;
-    font-size: .9rem;
-    line-height: 1.6;
-    color: #373044;
-}
-
-/* FOOTER */
-
+.preview-head { padding:13px 16px; font-weight:800; font-size:.9rem; }
+.preview-image { width:100%; height:150px; object-fit:cover; }
+.preview-caption { padding:14px 16px 18px; font-size:.9rem; line-height:1.6; color:#373044; }
 .footer {
-    margin-top: 55px;
-    padding: 32px;
-    border-radius: 24px;
-    background: #211b35;
-    color: #eae5ff;
+    margin-top:55px; padding:32px; border-radius:24px;
+    background:#211b35; color:#eae5ff;
 }
-
-.footer strong {
-    color: white;
-    font-family: 'Space Grotesk';
-    font-size: 1.35rem;
-}
-
-.footer p {
-    color: #c5bddb;
-    font-size: .88rem;
-    line-height: 1.7;
-}
-
-/* BUTTONS */
-
+.footer strong { color:white; font-family:'Space Grotesk'; font-size:1.35rem; }
+.footer p { color:#c5bddb; font-size:.88rem; line-height:1.7; }
 div.stButton > button {
-    border: 0;
-    border-radius: 13px;
-    padding: .72rem 1.2rem;
-    font-weight: 800;
-    background: linear-gradient(100deg,#7657e8,#9678f3);
-    color: white !important;
-    transition: all .2s ease;
+    border:0; border-radius:13px; padding:.72rem 1.2rem;
+    font-weight:800; background:linear-gradient(100deg,#7657e8,#9678f3);
+    color:white; transition:all .2s ease;
 }
-
 div.stButton > button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(118,87,232,.25);
-    color: white !important;
-    border: 0;
+    transform:translateY(-2px); box-shadow:0 8px 20px rgba(118,87,232,.25);
+    color:white; border:0;
 }
-
 div[data-testid="stDownloadButton"] button {
-    border-radius: 12px;
-    border: 1px solid #dcd3f5;
-    color: #5c43b7 !important;
-    font-weight: 800;
+    border-radius:12px; border:1px solid #dcd3f5; color:#5c43b7; font-weight:800;
 }
-
-/* =====================================================
-   FORM LABELS, INPUT BOXES AND DROPDOWNS
-   ===================================================== */
-
-/* Labels above every Streamlit widget */
-.stApp [data-testid="stWidgetLabel"],
-.stApp [data-testid="stWidgetLabel"] p,
-.stApp [data-testid="stWidgetLabel"] label,
-.stApp .stSelectbox label,
-.stApp .stMultiSelect label,
-.stApp .stTextInput label,
-.stApp .stTextArea label {
-    color: #201b35 !important;
-    font-size: .95rem !important;
-    font-weight: 700 !important;
-    opacity: 1 !important;
-    visibility: visible !important;
+input, textarea, [data-baseweb="select"] > div {
+    border-radius:12px !important;
 }
-
-div[data-testid="stWidgetLabel"] {
-    margin-bottom: 5px !important;
+/* Keep Streamlit form labels and entered text readable on light surfaces. */
+div[data-testid="stWidgetLabel"] p,
+div[data-testid="stWidgetLabel"] label,
+div[data-testid="stTextInput"] label,
+div[data-testid="stTextArea"] label,
+div[data-testid="stSelectbox"] label,
+div[data-testid="stMultiSelect"] label,
+div[data-testid="stNumberInput"] label,
+div[data-testid="stDateInput"] label,
+div[data-testid="stTimeInput"] label {
+    color:#201b35 !important;
+    font-weight:700 !important;
 }
-
-/* Text inputs and text areas */
-.stApp input,
-.stApp textarea,
-.stApp div[data-baseweb="input"] input,
-.stApp div[data-baseweb="textarea"] textarea {
-    color: #201b35 !important;
-    background-color: #ffffff !important;
-    -webkit-text-fill-color: #201b35 !important;
-    caret-color: #7657e8 !important;
-    border-color: #dcd3f5 !important;
-    border-radius: 12px !important;
-    opacity: 1 !important;
-}
-
-/* Placeholder text */
-.stApp input::placeholder,
-.stApp textarea::placeholder {
-    color: #918aa2 !important;
-    -webkit-text-fill-color: #918aa2 !important;
-    opacity: 1 !important;
-}
-
-/* Dropdown and multiselect text */
-.stApp [data-baseweb="select"] > div {
-    background-color: #ffffff !important;
-    border-color: #dcd3f5 !important;
-    border-radius: 12px !important;
-}
-
-.stApp [data-baseweb="select"] span,
-.stApp [data-baseweb="select"] input,
-.stApp [data-baseweb="select"] div {
-    color: #201b35 !important;
-}
-
-/* Dropdown menu options */
-.stApp [role="listbox"],
-.stApp [role="option"] {
-    background-color: #ffffff !important;
-    color: #201b35 !important;
-}
-
-.stApp [role="option"]:hover {
-    background-color: #eee9ff !important;
-}
-
-/* Text area background */
+div[data-testid="stTextInput"] input,
 div[data-testid="stTextArea"] textarea {
-    background: #ffffff !important;
+    background:#ffffff !important;
+    color:#201b35 !important;
+    -webkit-text-fill-color:#201b35 !important;
+    caret-color:#201b35 !important;
 }
-
-/* General input border radius */
-input,
-textarea,
-[data-baseweb="select"] > div {
-    border-radius: 12px !important;
+div[data-testid="stTextInput"] input::placeholder,
+div[data-testid="stTextArea"] textarea::placeholder {
+    color:#77728b !important;
+    -webkit-text-fill-color:#77728b !important;
+    opacity:1 !important;
 }
-
-hr {
-    border-color: #eee9f5;
+div[data-testid="stSelectbox"] [data-baseweb="select"] > div,
+div[data-testid="stMultiSelect"] [data-baseweb="select"] > div {
+    background:#ffffff !important;
+    color:#201b35 !important;
 }
-
-.small-note {
-    color: #8b849d;
-    font-size: .78rem;
-    line-height: 1.55;
+div[data-testid="stSelectbox"] [data-baseweb="select"] *,
+div[data-testid="stMultiSelect"] [data-baseweb="select"] * {
+    color:#201b35 !important;
 }
-
-/* STREAMLIT HEADER */
-header[data-testid="stHeader"] {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-}
-
-div[data-testid="stToolbar"] {
-    display: none !important;
-}
-
-/* MOBILE LAYOUT */
+div[data-testid="stTextArea"] textarea { background:#fff !important; }
+hr { border-color:#eee9f5; }
+.small-note { color:#8b849d; font-size:.78rem; line-height:1.55; }
 @media(max-width:850px) {
-    .hero {
-        padding: 34px 25px 260px;
-    }
-
-    .hero-art {
-        width: 75%;
-        right: 8%;
-        top: auto;
-        bottom: 8px;
-    }
-
-    .hero h1 {
-        font-size: 2.8rem;
-    }
-
-    .section-title {
-        font-size: 1.9rem;
-    }
-
-    .topbar {
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    .navlinks {
-        text-align: center;
-        line-height: 2;
-    }
+    .hero { padding:34px 25px 260px; }
+    .hero-art { width:75%; right:8%; top:auto; bottom:8px; }
+    .hero h1 { font-size:2.8rem; }
+    .section-title { font-size:1.9rem; }
 }
 </style>
 """, unsafe_allow_html=True)
@@ -666,31 +344,17 @@ def make_report(brand_name, platform, score, components, strengths, improvements
 
 if "rewrite_result" not in st.session_state:
     st.session_state.rewrite_result = None
-
 if "history" not in st.session_state:
     st.session_state.history = []
-
 if "last_original" not in st.session_state:
     st.session_state.last_original = ""
-
-if "last_signature" not in st.session_state:
-    st.session_state.last_signature = None
-
-# ---------------------------- NAVIGATION ----------------------------
 
 # ---------------------------- NAVIGATION ----------------------------
 
 st.markdown("""
 <div class="topbar">
   <div class="logo">✦ inkloom<span>AI</span></div>
-  <div class="navlinks">
-    <a href="#home">HOME</a> ·
-    <a href="#about">ABOUT</a> ·
-    <a href="#features">FEATURES</a> ·
-    <a href="#how-it-works">HOW IT WORKS</a> ·
-    <a href="#workspace">WORKSPACE</a> ·
-    <a href="#faq">FAQ</a>
-  </div>
+  <div class="navlinks">HOME　 ·　 ABOUT　 ·　 FEATURES　 ·　 HOW IT WORKS　 ·　 WORKSPACE　 ·　 FAQ</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -842,29 +506,62 @@ section_heading(
     "Complete the brand profile, add a draft and explore the content review. You can change your selections and run the rewrite again."
 )
 
-with st.container(border=True):
+with st.container():
     st.markdown("### 01 · Build your brand profile")
     st.caption("These settings guide the prototype's rewrite choices and the explanations shown with your results.")
     b1, b2 = st.columns(2)
     with b1:
         brand_name = st.text_input("Brand name", placeholder="e.g. Bloom Studio")
-        industry = st.selectbox("Industry", ["Choose an industry", "Fashion & lifestyle", "Technology", "Education", "Food & beverage", "Beauty & wellness", "Retail & e-commerce", "Creative services", "Other"])
-        personality = st.multiselect("Brand personality", ["Friendly", "Professional", "Bold", "Minimal", "Playful", "Trustworthy", "Innovative", "Elegant"], default=["Friendly", "Professional"])
-        tone = st.selectbox("Preferred communication tone", ["Friendly", "Professional", "Creative", "Formal", "Inspirational"], index=0)
+
+        industry_choice = st.selectbox(
+            "Industry",
+            ["Choose an industry", "Fashion & lifestyle", "Technology", "Education", "Food & beverage", "Beauty & wellness", "Retail & e-commerce", "Creative services", "Other"],
+        )
+        industry_custom = st.text_input("Enter your industry", placeholder="e.g. Healthcare, Sports") if industry_choice == "Other" else ""
+        industry = industry_custom.strip() if industry_choice == "Other" and industry_custom.strip() else industry_choice
+
+        personality_options = ["Friendly", "Professional", "Bold", "Minimal", "Playful", "Trustworthy", "Innovative", "Elegant", "Other"]
+        personality = st.multiselect("Brand personality", personality_options, default=["Friendly", "Professional"])
+        personality_custom = st.text_input("Enter another personality", placeholder="e.g. witty, calm, adventurous") if "Other" in personality else ""
+        personality = [item for item in personality if item != "Other"]
+        if personality_custom.strip():
+            personality.extend([item.strip() for item in personality_custom.split(",") if item.strip()])
+
+        tone_choice = st.selectbox(
+            "Preferred communication tone",
+            ["Friendly", "Professional", "Creative", "Formal", "Inspirational", "Other"],
+            index=0,
+        )
+        tone_custom = st.text_input("Enter your preferred tone", placeholder="e.g. warm, witty, reassuring") if tone_choice == "Other" else ""
+        tone = tone_custom.strip() if tone_choice == "Other" and tone_custom.strip() else tone_choice
+
     with b2:
         audience = st.text_input("Target audience", placeholder="e.g. young professionals, students")
         brand_description = st.text_area("Describe your brand", placeholder="What do you offer? What makes your brand different?", height=105)
         preferred_words = st.text_input("Words your brand likes (comma-separated)", placeholder="thoughtful, simple, discover")
         avoid_words = st.text_input("Words or phrases to avoid (comma-separated)", placeholder="cheap, guaranteed, hurry up")
+
     st.markdown("### 02 · Set up your content")
     p1, p2, p3 = st.columns(3)
     with p1:
-        platform = st.selectbox("Publishing platform", ["Instagram", "LinkedIn", "Facebook", "Website", "Email", "Blog"])
+        platform_choice = st.selectbox("Publishing platform", ["Instagram", "LinkedIn", "Facebook", "Website", "Email", "Blog", "Other"])
+        platform_custom = st.text_input("Enter your platform", placeholder="e.g. WhatsApp, Pinterest") if platform_choice == "Other" else ""
+        platform = platform_custom.strip() if platform_choice == "Other" and platform_custom.strip() else platform_choice
     with p2:
-        content_type = st.selectbox("Content type", ["Social media post", "Advertisement", "Product description", "Announcement", "Email", "Blog introduction"])
+        content_type_choice = st.selectbox("Content type", ["Social media post", "Advertisement", "Product description", "Announcement", "Email", "Blog introduction", "Other"])
+        content_type_custom = st.text_input("Enter your content type", placeholder="e.g. event invitation, press release") if content_type_choice == "Other" else ""
+        content_type = content_type_custom.strip() if content_type_choice == "Other" and content_type_custom.strip() else content_type_choice
     with p3:
-        purpose = st.selectbox("Content purpose", ["Inform", "Promote", "Educate", "Engage", "Inspire"])
-    length_choice = st.selectbox("Preferred output length", ["Keep close to original", "Short", "Medium", "Detailed"])
+        purpose_choice = st.selectbox("Content purpose", ["Inform", "Promote", "Educate", "Engage", "Inspire", "Other"])
+        purpose_custom = st.text_input("Enter your content purpose", placeholder="e.g. build trust, announce a launch") if purpose_choice == "Other" else ""
+        purpose = purpose_custom.strip() if purpose_choice == "Other" and purpose_custom.strip() else purpose_choice
+
+    length_choice_option = st.selectbox(
+        "Preferred output length",
+        ["Keep close to original", "Short", "Medium", "Detailed", "Other"],
+    )
+    length_custom = st.text_input("Describe your preferred length", placeholder="e.g. exactly 3 sentences") if length_choice_option == "Other" else ""
+    length_choice = length_custom.strip() if length_choice_option == "Other" and length_custom.strip() else length_choice_option
     original_content = st.text_area(
         "Paste your content",
         placeholder="Start with your draft here. It can be a social post, product description, announcement or another short piece of brand communication...",
@@ -886,196 +583,87 @@ with st.container(border=True):
     run_button = st.button("✦ Analyse & rewrite my content", use_container_width=True, type="primary")
 
 # ---------------------------- ANALYSIS + RESULTS ----------------------------
+
 if run_button:
     if not original_content.strip():
         st.warning("Add some content first, then run the analysis.")
-
     else:
-        # Identify the current inputs
-        current_signature = (
-            original_content,
-            brand_name,
-            industry,
-            tuple(personality),
-            tone,
-            audience,
-            brand_description,
-            preferred_words,
-            avoid_words,
-            platform,
-            content_type,
-            purpose,
-            length_choice
-        )
+        try:
+            result = rewrite_content(
+                original_content,
+                personality,
+                tone,
+                audience or "Not specified",
+                platform,
+                brand_name=brand_name,
+                brand_description=brand_description,
+            )
+            # Compatibility with the current ai_engine.py return structure.
+            if "main" not in result:
+                main_text = result.get("rewritten_content", original_content)
+                result = {
+                    "main": main_text,
+                    "friendly": main_text,
+                    "professional": main_text,
+                    "creative": main_text,
+                    "explanations": result.get("explanations", []),
+                }
 
-        # Prevent unnecessary repeated processing
-        if (
-            st.session_state.rewrite_result is not None
-            and st.session_state.last_signature == current_signature
-        ):
-            st.info(
-                "Your results are already generated! "
-                "Scroll down to explore your content report."
+            total, components, strengths, improvements, words, chars = calculate_content_score(
+                original_content, platform, content_type
             )
 
-        else:
-            try:
-                with st.spinner(
-                    "✦ Inkloom is analysing your content and aligning it with your brand identity..."
-                ):
+            avoid_list = [x.strip().lower() for x in avoid_words.split(",") if x.strip()]
+            preferred_list = [x.strip().lower() for x in preferred_words.split(",") if x.strip()]
+            rewritten = result.get("main", original_content)
+            avoided_found = [word for word in avoid_list if word in rewritten.lower()]
+            preferred_found = [word for word in preferred_list if word in rewritten.lower()]
+            consistency_score = max(0, min(100, 100 - len(avoided_found) * 20 + min(10, len(preferred_found) * 5)))
+            if not personality:
+                consistency_score = max(0, consistency_score - 10)
 
-                    result = rewrite_content(
-                        original_content,
-                        personality,
-                        tone,
-                        audience or "Not specified",
-                        platform,
-                        brand_name=brand_name,
-                        industry=industry,
-                        brand_description=brand_description,
-                        preferred_words=preferred_words,
-                        avoid_words=avoid_words,
-                        content_type=content_type,
-                        purpose=purpose,
-                        length_choice=length_choice,
-                    )
+            suggestions = list(improvements)
+            if not re.search(r"\b(try|explore|visit|learn|shop|contact|follow|comment|share|discover)\b", original_content, re.I):
+                suggestions.append("Consider a clear call to action that tells the reader what to do next.")
+            if original_content.count("!") > 2:
+                suggestions.append("Reduce repeated exclamation marks for a more controlled brand voice.")
+            if not audience:
+                suggestions.append("Define a target audience to make future content decisions more focused.")
+            if len(original_content.split()) < 12:
+                suggestions.append("Add a little more context so readers understand the value of your message.")
 
-                    # Compatibility with the current ai_engine.py
-                    if "main" not in result:
-                        main_text = result.get(
-                            "rewritten_content",
-                            original_content
-                        )
+            st.session_state.rewrite_result = {
+                "result": result,
+                "score": total,
+                "components": components,
+                "strengths": strengths,
+                "improvements": improvements,
+                "suggestions": suggestions,
+                "consistency": consistency_score,
+                "avoided_found": avoided_found,
+                "preferred_found": preferred_found,
+                "original": original_content,
+                "platform": platform,
+                "brand": brand_name,
+                "content_type": content_type,
+                "purpose": purpose,
+                "length": length_choice,
+                "timestamp": datetime.now().strftime("%H:%M"),
+            }
+            st.session_state.history.insert(0, {
+                "time": datetime.now().strftime("%d %b %H:%M"),
+                "brand": brand_name or "Untitled brand",
+                "platform": platform,
+                "original": original_content,
+                "rewritten": rewritten,
+                "score": total,
+            })
+            st.session_state.history = st.session_state.history[:8]
+        except Exception as error:
+            st.error(f"Something went wrong while running the rewrite: {error}")
+            st.info("Check that ai_engine.py is in the same folder and contains rewrite_content().")
 
-                        result = {
-                            "main": main_text,
-                            "friendly": main_text,
-                            "professional": main_text,
-                            "creative": main_text,
-                            "explanations": result.get(
-                                "explanations", []
-                            ),
-                        }
-
-                    total, components, strengths, improvements, words, chars = calculate_content_score(
-                        original_content,
-                        platform,
-                        content_type
-                    )
-
-                    avoid_list = [
-                        x.strip().lower()
-                        for x in avoid_words.split(",")
-                        if x.strip()
-                    ]
-
-                    preferred_list = [
-                        x.strip().lower()
-                        for x in preferred_words.split(",")
-                        if x.strip()
-                    ]
-
-                    rewritten = result.get("main", original_content)
-
-                    avoided_found = [
-                        word for word in avoid_list
-                        if word in rewritten.lower()
-                    ]
-
-                    preferred_found = [
-                        word for word in preferred_list
-                        if word in rewritten.lower()
-                    ]
-
-                    consistency_score = max(
-                        0,
-                        min(
-                            100,
-                            100 - len(avoided_found) * 20
-                            + min(10, len(preferred_found) * 5)
-                        )
-                    )
-
-                    if not personality:
-                        consistency_score = max(
-                            0, consistency_score - 10
-                        )
-
-                    suggestions = list(improvements)
-
-                    if not re.search(
-                        r"\b(try|explore|visit|learn|shop|contact|follow|comment|share|discover)\b",
-                        original_content,
-                        re.I
-                    ):
-                        suggestions.append(
-                            "Consider a clear call to action that tells the reader what to do next."
-                        )
-
-                    if original_content.count("!") > 2:
-                        suggestions.append(
-                            "Reduce repeated exclamation marks for a more controlled brand voice."
-                        )
-
-                    if not audience:
-                        suggestions.append(
-                            "Define a target audience to make future content decisions more focused."
-                        )
-
-                    if len(original_content.split()) < 12:
-                        suggestions.append(
-                            "Add a little more context so readers understand the value of your message."
-                        )
-
-                    # Save generated results
-                    st.session_state.rewrite_result = {
-                        "result": result,
-                        "score": total,
-                        "components": components,
-                        "strengths": strengths,
-                        "improvements": improvements,
-                        "suggestions": suggestions,
-                        "consistency": consistency_score,
-                        "avoided_found": avoided_found,
-                        "preferred_found": preferred_found,
-                        "original": original_content,
-                        "platform": platform,
-                        "brand": brand_name,
-                        "content_type": content_type,
-                        "purpose": purpose,
-                        "length": length_choice,
-                        "timestamp": datetime.now().strftime("%H:%M"),
-                    }
-
-                    # Remember which inputs produced these results
-                    st.session_state.last_signature = current_signature
-
-                    st.session_state.history.insert(0, {
-                        "time": datetime.now().strftime("%d %b %H:%M"),
-                        "brand": brand_name or "Untitled brand",
-                        "platform": platform,
-                        "original": original_content,
-                        "rewritten": rewritten,
-                        "score": total,
-                    })
-
-                    st.session_state.history = (
-                        st.session_state.history[:8]
-                    )
-
-                st.success(
-                    "✦ Your content is ready! "
-                    "Scroll down to explore your results."
-                )
-
-            except Exception as error:
-                st.error(
-                    f"Something went wrong while running the rewrite: {error}"
-                )
-                st.info(
-                    "Check that ai_engine.py is in the same folder "
-                    "and contains rewrite_content()."
-                )
+if st.session_state.rewrite_result:
     data = st.session_state.rewrite_result
     result = data["result"]
     st.markdown("---")
