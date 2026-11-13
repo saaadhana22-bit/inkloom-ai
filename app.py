@@ -2,8 +2,11 @@ import streamlit as st
 import re
 import html
 from datetime import datetime
-from ai_engine import rewrite_content
-from database import save_rewrite
+from ai_engine import rewrite_content, detect_content_issues, check_brand_references
+from database import (
+    save_rewrite, save_review, get_reviews, update_review,
+    save_mistakes, get_mistake_summary, save_brand_fact, get_brand_facts
+)
 # ============================================================
 # INKLOOM AI — BRAND COMMUNICATION & CONTENT STUDIO
 # Main application file. Keep ai_engine.py in the same folder.
@@ -622,6 +625,13 @@ if run_button:
             if not personality:
                 consistency_score = max(0, consistency_score - 10)
 
+            # Round 3: heuristic issue detection and approved-reference checking.
+            detected_issues = detect_content_issues(original_content, avoid_words)
+            if detected_issues:
+                save_mistakes(brand_name or "Untitled brand", detected_issues, original_content)
+            approved_facts = get_brand_facts(brand_name) if brand_name.strip() else []
+            fact_checks = check_brand_references(original_content, approved_facts)
+
             suggestions = list(improvements)
             if not re.search(r"\b(try|explore|visit|learn|shop|contact|follow|comment|share|discover)\b", original_content, re.I):
                 suggestions.append("Consider a clear call to action that tells the reader what to do next.")
@@ -642,6 +652,8 @@ if run_button:
                 "consistency": consistency_score,
                 "avoided_found": avoided_found,
                 "preferred_found": preferred_found,
+                "detected_issues": detected_issues,
+                "fact_checks": fact_checks,
                 "original": original_content,
                 "platform": platform,
                 "brand": brand_name,
@@ -755,6 +767,32 @@ if st.session_state.rewrite_result:
         st.markdown("**Brand-aligned rewrite**")
         st.markdown(f"<div class='result-box'>{safe_text(selected_rewrite)}</div>", unsafe_allow_html=True)
 
+    st.markdown("### Brand fact & reference check")
+    st.caption("This prototype checks whether approved reference phrases appear exactly in the original draft. It does not understand or prove factual contradictions; manually verify every claim before publishing.")
+    if data.get("fact_checks"):
+        for check in data["fact_checks"]:
+            if check["status"] == "Matched":
+                st.success(f"Matched: {check['fact']} — {check['message']}")
+            else:
+                st.warning(f"Not found: {check['fact']} — {check['message']}")
+    else:
+        st.info("No approved facts are stored for this brand yet. Add facts in the Brand Facts tab below to check future drafts.")
+
+    if data.get("detected_issues"):
+        st.markdown("### Potential content issues detected")
+        for issue in data["detected_issues"]:
+            st.warning(f"{issue['type']}: {issue['description']}")
+        st.caption("These are simple rule-based flags. Review them manually; they may produce false positives.")
+    else:
+        st.success("No issues were detected by the current heuristic checks.")
+
+    if st.button("📨 Submit this rewrite for human review", key="submit_review"):
+        review_record = save_review(data["brand"] or "Untitled brand", data["original"], selected_rewrite)
+        if review_record:
+            st.success("Saved to the review queue with status: Draft.")
+        else:
+            st.error("The review could not be saved. Check the Supabase connection and table policies.")
+
     st.markdown("### Platform preview")
     if data["platform"] == "Instagram":
         st.markdown(f"""
@@ -808,6 +846,97 @@ if st.session_state.history:
             st.write(item["rewritten"])
 else:
     st.markdown('<div class="card"><h3>Your recent work will appear here.</h3><p>Run your first content review in the workspace above to start your session history.</p></div>', unsafe_allow_html=True)
+
+# ---------------------------- ROUND 3: BRAND GOVERNANCE ----------------------------
+
+section_heading(
+    "ROUND 3 · BRAND GOVERNANCE",
+    "Review, learn and protect your brand voice.",
+    "A prototype workflow for human approvals, recurring writing-issue tracking and approved brand references."
+)
+review_tab, mistake_tab, facts_tab = st.tabs([
+    "Human review & approval", "Recurring mistake tracker", "Brand facts & references"
+])
+
+with review_tab:
+    st.markdown("### Content approval queue")
+    st.caption("A lightweight review queue. In this prototype, reviewers share the same app access; individual reviewer accounts are not implemented.")
+    review_records = get_reviews()
+    if not review_records:
+        st.info("No submissions yet. Run a rewrite and use ‘Submit this rewrite for human review’ to add one.")
+    else:
+        for review in review_records:
+            review_id = review.get("id")
+            title = f"Review #{review_id} · {review.get('brand_name') or 'Untitled brand'} · {review.get('status', 'Draft')}"
+            with st.expander(title):
+                st.markdown("**Original draft**")
+                st.write(review.get("original_text", ""))
+                st.markdown("**Submitted rewrite**")
+                st.write(review.get("rewritten_text", ""))
+                with st.form(key=f"review_form_{review_id}"):
+                    status_options = ["Draft", "Under Review", "Changes Requested", "Approved"]
+                    current_status = review.get("status", "Draft")
+                    status_index = status_options.index(current_status) if current_status in status_options else 0
+                    new_status = st.selectbox("Review status", status_options, index=status_index, key=f"review_status_{review_id}")
+                    comment = st.text_area("Reviewer comments", value=review.get("reviewer_comment") or "", key=f"review_comment_{review_id}")
+                    submitted = st.form_submit_button("Save review decision")
+                    if submitted:
+                        if update_review(review_id, new_status, comment):
+                            st.success("Review decision saved.")
+                            st.rerun()
+                        else:
+                            st.error("Could not update this review. Check the database permissions.")
+
+with mistake_tab:
+    st.markdown("### Repeated writing issues")
+    mistake_records = get_mistake_summary()
+    if not mistake_records:
+        st.info("No issue patterns have been logged yet. Run content analysis to start collecting heuristic flags.")
+    else:
+        counts = {}
+        for record in mistake_records:
+            category = record.get("issue_type", "Other")
+            counts[category] = counts.get(category, 0) + 1
+        metric_cols = st.columns(min(3, max(1, len(counts))))
+        for index, (category, count) in enumerate(sorted(counts.items(), key=lambda item: item[1], reverse=True)):
+            with metric_cols[index % len(metric_cols)]:
+                st.metric(category, count)
+        st.markdown("#### Recent logged issues")
+        st.dataframe([
+            {
+                "Brand": item.get("brand_name"),
+                "Issue": item.get("issue_type"),
+                "Description": item.get("issue_description"),
+                "Logged": item.get("created_at"),
+            }
+            for item in mistake_records[:50]
+        ], use_container_width=True, hide_index=True)
+        st.caption("Counts reflect heuristic flags from submitted drafts, not independently verified errors.")
+
+with facts_tab:
+    st.markdown("### Approved brand facts")
+    st.caption("Add exact approved statements, product details or reference phrases. Inkloom checks for their verbatim presence; it does not infer whether a different statement is false.")
+    fact_brand = st.text_input("Brand name for this fact", value=brand_name or "", key="fact_brand_name")
+    with st.form("add_brand_fact_form"):
+        fact_type = st.selectbox("Fact category", ["General", "Product", "Service", "Pricing", "Policy", "Contact", "Other"])
+        fact_text = st.text_area("Approved fact or reference phrase", placeholder="Example: Our product is made with 100% recycled cotton.")
+        add_fact = st.form_submit_button("Add approved fact")
+        if add_fact:
+            if not fact_brand.strip() or not fact_text.strip():
+                st.warning("Enter both a brand name and an approved fact.")
+            elif save_brand_fact(fact_brand.strip(), fact_text.strip(), fact_type):
+                st.success("Approved brand fact saved.")
+                st.rerun()
+            else:
+                st.error("Could not save the fact. Check the Supabase connection and table policies.")
+    if fact_brand.strip():
+        stored_facts = get_brand_facts(fact_brand.strip())
+        if stored_facts:
+            st.markdown("#### Saved references")
+            for fact in stored_facts:
+                st.markdown(f"- **{safe_text(fact.get('fact_type', 'General'))}:** {safe_text(fact.get('fact_text', ''))}")
+        else:
+            st.info("No approved facts are stored for this brand yet.")
 
 # ---------------------------- INSPIRATION ----------------------------
 
