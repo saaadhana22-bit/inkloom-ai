@@ -3,7 +3,7 @@ import re
 import html
 from datetime import datetime
 from ai_engine import rewrite_content
-
+from database import save_rewrite
 # ============================================================
 # INKLOOM AI — BRAND COMMUNICATION & CONTENT STUDIO
 # Main application file. Keep ai_engine.py in the same folder.
@@ -659,6 +659,22 @@ if run_button:
                 "score": total,
             })
             st.session_state.history = st.session_state.history[:8]
+
+            # Save the generated rewrite to Supabase
+            saved_rewrite = save_rewrite(
+                original_content,
+                rewritten,
+                tone
+            )
+
+            if saved_rewrite:
+                st.success("Your rewrite has been saved successfully!")
+            else:
+                st.warning(
+                    "Your rewrite was generated, but couldn't be saved "
+                    "to the database. Your current session history is available."
+                )
+
         except Exception as error:
             st.error(f"Something went wrong while running the rewrite: {error}")
             st.info("Check that ai_engine.py is in the same folder and contains rewrite_content().")
@@ -781,7 +797,7 @@ if st.session_state.rewrite_result:
 section_heading(
     "YOUR RECENT WORK",
     "A little trail of your ideas.",
-    "Recent rewrites are kept in this browser session while the app remains open. They are not saved to a permanent account or database."
+    "Your recent rewrites appear here during this browser session. Generated rewrites are also stored in Inkloom AI's database."
 )
 if st.session_state.history:
     for item in st.session_state.history:
@@ -820,7 +836,7 @@ faq_items = [
     ("Does it use a generative AI model right now?", "The current prototype uses Python-based rules and phrase substitutions. It is not connected to a generative AI model yet."),
     ("Are the content scores engagement predictions?", "No. Scores are transparent, rule-based indicators of writing characteristics. They do not predict views, likes, reach or sales."),
     ("Which platforms can I preview?", "The prototype includes simple preview layouts for Instagram, LinkedIn and a general layout for other selected platforms."),
-    ("Is my content permanently saved?", "No. The recent-work list is stored only in the active Streamlit session. It is not a permanent account or database."),
+   ("Is my content permanently saved?", "Generated rewrites are stored in Inkloom AI's database. The recent-work list displayed in the app is maintained only during the active browser session. Inkloom AI does not currently provide user accounts or cross-session history retrieval."),
     ("Can I download my results?", "Yes. You can download individual rewrite versions and a plain-text content review report."),
 ]
 for question, answer in faq_items:

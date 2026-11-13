@@ -1,3 +1,4 @@
+
 import re
 
 
@@ -16,127 +17,194 @@ def rewrite_content(
     purpose="",
     length_choice=""
 ):
-    rewritten = (original_content or "").strip()
+    text = re.sub(r"\s+", " ", (original_content or "")).strip()
     explanations = []
 
-    # Clean exaggerated repeated letters
-    rewritten = re.sub(
-        r"([a-zA-Z])\1{2,}",
-        r"\1\1",
-        rewritten,
-        flags=re.IGNORECASE
-    )
+    if not text:
+        return {
+            "rewritten_content": "",
+            "explanations": ["No content was provided."]
+        }
 
-    # Normalise common stretched promotional words
-    rewritten = re.sub(r"\bbuyy+\b", "buy", rewritten, flags=re.IGNORECASE)
-    rewritten = re.sub(r"\bnoww+\b", "now", rewritten, flags=re.IGNORECASE)
+    # 1. Normalize input
+    text = re.sub(r"([a-zA-Z])\1{2,}", r"\1\1", text)
+    text = re.sub(r"[!?]{2,}", ".", text)
 
-    # 1. Normalise personality
     if isinstance(personality, str):
         personality = [personality]
 
     personality = personality or []
 
-    # 2. Improve capitalisation
-    if rewritten:
-        rewritten = rewritten[0].upper() + rewritten[1:]
+    # 2. Product launch rewriting
+    launch_pattern = (
+        r"\b(?:we have|we've) launched "
+        r"(?:our )?(?:new )?collection\b"
+    )
 
-        if rewritten.isupper():
-            rewritten = rewritten.capitalize()
-
-        explanations.append(
-            "Improved capitalisation for readability."
-        )
-
-    # Improve spacing between sentences
-    rewritten = re.sub(r"\s+", " ", rewritten).strip()
-
-    # 3. Reduce excessive punctuation
-    if re.search(r"[!?]{2,}", rewritten):
-        rewritten = re.sub(r"[!?]{2,}", ".", rewritten)
-        explanations.append(
-            "Reduced excessive punctuation."
-        )
-
-    # 4. Replace aggressive promotional language
-    replacements = {
-        "buy now": "explore our product",
-        "hurry up": "discover it today",
-        "best product ever": "a product designed with you in mind",
-        "don't miss out": "find out more",
-        "limited time offer": "special offer",
-        "amazing deal": "special opportunity"
+    launch_styles = {
+        "Friendly": "Great news — our new collection is here",
+        "Professional": "Introducing our latest collection",
+        "Formal": "We are pleased to present our latest collection",
+        "Bold": "It's here — discover our new collection",
+        "Inspirational": "A fresh new collection has arrived",
+        "Creative": "A new chapter in style begins today",
+        "Minimalist": "Our new collection has arrived"
     }
 
-    for old, new in replacements.items():
-        pattern = re.compile(re.escape(old), re.IGNORECASE)
+    if re.search(launch_pattern, text, re.IGNORECASE):
+        selected_style = launch_styles.get(tone)
 
-        if pattern.search(rewritten):
-            rewritten = pattern.sub(new, rewritten)
-            explanations.append(
-                f"Replaced '{old}' with '{new}'."
+        if not selected_style:
+            selected_style = (
+                launch_styles["Creative"]
+                if "Creative" in personality
+                else launch_styles["Friendly"]
             )
 
-    # 5. Tone adaptation
+        text = re.sub(
+            launch_pattern,
+            selected_style,
+            text,
+            count=1,
+            flags=re.IGNORECASE
+        )
+
+        explanations.append(
+            "Reworked the product-launch opening."
+        )
+
+    # 3. Promotional phrase improvements
+    phrase_rules = {
+        r"\bhey everyone[!,.]?\s*": "",
+        r"\bcome and explore\b": "discover",
+        r"\bcheck it out\b": "take a closer look",
+
+        r"\bcome and explore\b": "discover",
+        r"\bcheck it out\b": "take a closer look",
+        r"\bbuy now\b": "explore the collection",
+        r"\bhurry up\b": "discover it today",
+        r"\bdon't miss out on\b": "explore",
+        r"\bdon't miss out\b": "find out more",
+        r"\bbest product ever\b": "a product designed with you in mind",
+        r"\blimited time offer\b": "special offer",
+        r"\bamazing deal\b": "special opportunity",
+        r"\bshop now\b": "explore our collection"
+    }
+
+    for pattern, replacement in phrase_rules.items():
+        updated = re.sub(
+            pattern,
+            replacement,
+            text,
+            flags=re.IGNORECASE
+        )
+
+        if updated != text:
+            text = updated
+            explanations.append("Improved promotional wording.")
+
+    # 4. Tone-specific vocabulary
     tone_rules = {
+        "Friendly": {
+            "purchase": "get",
+            "utilise": "use",
+            "assistance": "help",
+            "discover": "come explore"
+        },
         "Professional": {
             "gonna": "going to",
             "wanna": "want to",
             "awesome": "excellent",
-            "super cool": "highly useful"
+            "discover": "explore"
         },
         "Formal": {
             "gonna": "going to",
             "wanna": "wish to",
             "hey": "hello",
-            "cool": "excellent"
+            "cool": "excellent",
+            "discover": "explore"
         },
-        "Friendly": {
-            "purchase": "get",
-            "utilise": "use",
-            "assistance": "help"
+        "Bold": {
+            "discover": "experience",
+            "maybe": "now is the time to",
+            "try": "experience"
         },
         "Inspirational": {
-            "can't": "can",
             "impossible": "challenging",
-            "failure": "learning experience"
+            "failure": "learning experience",
+            "discover": "find inspiration in"
+        },
+        "Creative": {
+            "discover": "step into"
+        },
+        "Minimalist": {
+            "purchase": "buy",
+            "in order to": "to"
         }
     }
 
-    if tone in tone_rules:
-        for old, new in tone_rules[tone].items():
-            pattern = re.compile(
-                r"\b" + re.escape(old) + r"\b",
-                re.IGNORECASE
-            )
-            rewritten = pattern.sub(new, rewritten)
+    rules = tone_rules.get(tone, {})
 
-        explanations.append(
-            f"Adapted vocabulary for a {tone.lower()} tone."
+    for old, new in rules.items():
+        text = re.sub(
+            r"\b" + re.escape(old) + r"\b",
+            new,
+            text,
+            flags=re.IGNORECASE
         )
 
-    # 6. Personality adaptation
-    personality_rules = {
-        "Friendly": "friendly and approachable",
-        "Professional": "professional and credible",
-        "Creative": "creative and expressive",
+    if rules:
+        explanations.append(
+            f"Applied {tone.lower()} tone adjustments."
+        )
+
+    # 5. Personality direction
+    personality_notes = {
+        "Friendly": "approachable and conversational",
+        "Professional": "credible and polished",
+        "Creative": "expressive and imaginative",
         "Bold": "confident and direct",
         "Minimalist": "simple and concise",
-        "Trustworthy": "clear and reliable",
-        "Innovative": "forward-thinking"
+        "Trustworthy": "clear and reassuring",
+        "Innovative": "modern and forward-thinking"
     }
 
-    selected_personalities = [
-        personality_rules[p]
+    active_personalities = [
+        personality_notes[p]
         for p in personality
-        if p in personality_rules
+        if p in personality_notes
     ]
 
-    if selected_personalities:
+    if active_personalities:
         explanations.append(
-            "Applied brand personality direction: "
-            + ", ".join(selected_personalities)
-            + "."
+            "Applied brand personality: "
+            + ", ".join(active_personalities) + "."
+        )
+
+    # 6. Platform-specific finishing
+    if platform == "Instagram":
+        explanations.append(
+            "Prepared the wording for Instagram."
+        )
+
+    elif platform == "LinkedIn":
+        explanations.append(
+            "Prepared polished professional communication for LinkedIn."
+        )
+
+    elif platform == "Email":
+        explanations.append(
+            "Prepared concise wording suitable for email."
+        )
+
+    elif platform == "Website":
+        explanations.append(
+            "Prepared clear website-friendly communication."
+        )
+
+    elif platform == "Facebook":
+        explanations.append(
+            "Prepared conversational social media communication."
         )
 
     # 7. Preferred vocabulary
@@ -148,11 +216,11 @@ def rewrite_content(
 
     if preferred:
         explanations.append(
-            "Brand vocabulary preferences were considered: "
+            "Brand vocabulary preferences supplied: "
             + ", ".join(preferred) + "."
         )
 
-    # 8. Avoided vocabulary
+    # 8. Restricted vocabulary
     avoided = [
         word.strip()
         for word in (avoid_words or "").split(",")
@@ -161,34 +229,30 @@ def rewrite_content(
 
     for word in avoided:
         pattern = re.compile(re.escape(word), re.IGNORECASE)
+        text = pattern.sub("", text)
 
-        if pattern.search(rewritten):
-            rewritten = pattern.sub("", rewritten)
-            explanations.append(
-                f"Removed the restricted word or phrase '{word}'."
-            )
+    # 9. Clean spacing and punctuation
+    text = re.sub(r"\s+", " ", text)
+    text = re.sub(r"\s+([,.!?])", r"\1", text)
+    text = re.sub(r"([,.!?])([A-Za-z])", r"\1 \2", text)
+    text = text.strip()
 
-    # 9. Platform awareness
-    platform_guidance = {
-        "Instagram": "Prepared for short, engaging social communication.",
-        "LinkedIn": "Prepared for professional communication.",
-        "Website": "Prepared for clear website communication.",
-        "Email": "Prepared for direct email communication.",
-        "Facebook": "Prepared for conversational social communication."
-    }
+    # 10. Capitalisation
+    if text:
+        text = text[0].upper() + text[1:]
 
-    if platform in platform_guidance:
-        explanations.append(platform_guidance[platform])
+        text = re.sub(
+            r"([.!?]\s+)([a-z])",
+            lambda match: match.group(1) + match.group(2).upper(),
+            text
+        )
 
-    # 10. Brand context
+    # 11. Context explanations
     if brand_name:
         explanations.append(f"Brand: {brand_name}.")
 
     if industry:
-        explanations.append(f"Industry context: {industry}.")
-
-    if brand_description:
-        explanations.append("Brand description considered.")
+        explanations.append(f"Industry: {industry}.")
 
     if audience:
         explanations.append(f"Target audience: {audience}.")
@@ -200,10 +264,12 @@ def rewrite_content(
         explanations.append(f"Communication purpose: {purpose}.")
 
     if length_choice:
-        explanations.append(f"Requested content length: {length_choice}.")
+        explanations.append(f"Requested length: {length_choice}.")
 
-    # 11. Return results
+    if brand_description:
+        explanations.append("Brand description supplied.")
+
     return {
-        "rewritten_content": rewritten,
+        "rewritten_content": text,
         "explanations": explanations
     }
